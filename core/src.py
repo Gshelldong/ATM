@@ -1,6 +1,3 @@
-import os
-import json
-from lib import common
 from interface import user_interface
 
 def register():
@@ -29,7 +26,21 @@ def register():
 
 
 def login():
-    pass
+    count = 3
+    while count:
+        username = input('请输入用户名>>>: ')
+        # 判断用户是否存在
+        flag = user_interface.check_user_interface(username)
+        if not flag:
+            print("非法用户请重新输入！")
+            count -=1
+        password = input('请输入用户名密码>>>: ')
+        # 调用密码校验的接口
+
+
+
+
+
 
 # 查看余额
 def check_bal():
