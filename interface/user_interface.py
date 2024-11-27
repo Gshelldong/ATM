@@ -24,4 +24,13 @@ def register_interface(username,password,blance=15000):
 
 def login_interface(user,password):
     user_dic = db_handler.select(user)
-    md5_pas = common.get_md5(password)
+    password = common.get_md5(password)
+
+    if password == user_dic.get('password'):
+        return True,f'用户{user}登陆成功!'
+    return False,f'用户{user}登陆失败!'
+
+def check_bal_interface(username):
+    user_dic = db_handler.select(username)
+    return user_dic.get('balance')
+

@@ -1,4 +1,9 @@
-from interface import user_interface
+from interface import user_interface,bank_interface
+from lib import common
+
+user_info = {
+    'user_state': None
+}
 
 def register():
     print('用户注册.')
@@ -32,23 +37,37 @@ def login():
         # 判断用户是否存在
         flag = user_interface.check_user_interface(username)
         if not flag:
-            print("非法用户请重新输入！")
+            if count ==1:
+                print("尝试用户名最大次数！")
+                break
+            print('非法用户名!')
             count -=1
+            continue
+
         password = input('请输入用户名密码>>>: ')
         # 调用密码校验的接口
+        res,msg = user_interface.login_interface(username,password)
+        if res:
+            print(msg)
+            user_info['user_state'] = username
+            break
+        print(msg)
 
-
-
-
-
-
+@common.auth_login
 # 查看余额
 def check_bal():
-    pass
+    bal = user_interface.check_bal_interface(user_info['user_state'])
+    print(bal)
 
 # 提现
+@common.auth_login
 def withdraw():
-    pass
+    print("你现在使用提现功能!")
+    draw_cash = input('请输入你想提现多少>>>: ').strip()
+    flag,msg = bank_interface.withdraw_interface(user_info['user_state'],draw_cash)
+    if not flag:
+        print(msg)
+    print(msg)
 
 def repay():
     pass

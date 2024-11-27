@@ -6,7 +6,8 @@ def save(user_dit):
     # 把用户信息写入文件中
     user_path = os.path.join(settings.DB_DIR, f'{user_dit["username"]}.json')
     with open(user_path, mode='w', encoding='utf-8') as f:
-        dumps_user_dit = json.dump(user_dit, f)
+        # ensure_ascii False才不会被转义成编码字符
+        dumps_user_dit = json.dump(user_dit, f,ensure_ascii=False)
         f.close()
 
 def select(user):
