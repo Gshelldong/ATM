@@ -34,3 +34,8 @@ def check_bal_interface(username):
     user_dic = db_handler.select(username)
     return user_dic.get('balance')
 
+
+def login_out_interface(user):
+    from core import src
+    src.user_info[user] = None
+    return True, f'{user}注销成功.'

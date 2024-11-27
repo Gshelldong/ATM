@@ -18,3 +18,11 @@ def select(user):
             res_user_dic = json.load(f)
             return res_user_dic
         f.close()
+
+def goods_select():
+    file_path = os.path.join(settings.DB_DIR,'goods.json')
+    with open(file_path,mode='r',encoding='utf-8') as f:
+        goods_dic = json.load(f)
+        return goods_dic
+    f.close()
+

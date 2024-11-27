@@ -1,4 +1,4 @@
-from interface import user_interface,bank_interface
+from interface import user_interface,bank_interface,shopping_interface
 from lib import common
 
 user_info = {
@@ -70,20 +70,86 @@ def withdraw():
     print(msg)
 
 def repay():
-    pass
+    while True:
+        cash = input('')
+    bank_interface.re_pay_interface(user_info['user_state'],cash)
 
 # 转账
 def transfer():
     pass
 
+@common.auth_login
 def check_flow():
-    pass
+    res_flow = bank_interface.check_flow_interface(user_info['user_state'])
+    if res_flow:
+        for flow in res_flow:
+            print(flow)
+    else:
+        print('你还没有流水!')
 
+def shop_car():
+    # 查询现有的商品列表
+    goods_dic = shopping_interface.goods_list()
+    # 商品的菜单索引
+    goods_index = {}
+    # cost 只是一个展示
+    cost = 0
+    shopping_goods = {}
+    while True:
+        print('输入q退出购物车.')
+        for i, j in enumerate(goods_dic, 1):
+            print('%s: %s - ￥%s' % (i, j.center(10), goods_dic[j]))
+            goods_index[i]=j
+            goods_index[i]=j
+        choice = input('请选择你想要购买的商品>>>: ').strip()
+        if choice.isdigit():
+            choice = int(choice)
+            if choice >=1 and choice <= len(goods_dic):
+                goods = goods_index[choice]
+                goods_price = goods_dic[goods]
+                print('你放了一件%s商品到购物车,金额: %s元. %s + 1'%(goods,goods_price,goods))
+                if shopping_goods.get(goods):
+                    shopping_goods[goods] += 1
+                else:
+                    shopping_goods[goods] = 1
+                cost += goods_price
+                print('你现在购物车共计%s元.'%cost)
+            else:
+                print('请输入正确的商品编号!')
+        if choice == 'q':
+            choice_pay = input('是否付款Y/N: ').strip()
+            choice_pay = choice_pay.lower()
+            if choice_pay == 'y':
+                res,msg = shopping_interface.pay_shpping_car(user_info['user_state'],cost)
+                if res:
+                    # 购买成功后把购物车清空
+                    print(msg)
+                    goods_index.clear()
+                    break
+                else:
+                    print(msg)
+            elif choice_pay == 'n':
+                shopping_interface.add_shopp_car(user_info['user_state'],
+                                                 shopping_goods)
+                break
+            else:
+                print('余额不足请充值!')
+                # 余额不足
+
+@common.auth_login
 def check_shopping_car():
-    pass
+    shopp_car = shopping_interface.check_shopp_car(user_info['user_state'])
+    if not shopp_car:
+        print("你的购物车是空的!")
+    print(shopp_car)
 
 def login_out():
-    exit(0)
+    flag,msg = user_interface.login_out_interface(user_info['user_state'])
+    if flag:
+        print(msg)
+
+def admin_manage():
+    pass
 
 
 action_menu = {
@@ -94,8 +160,10 @@ action_menu = {
     '5': repay,
     '6': transfer,
     '7': check_flow,
-    '8': check_shopping_car,
-    '9': login_out
+    '8': shop_car,
+    '9': check_shopping_car,
+    '10': login_out,
+    '11': admin_manage
 }
 
 def run():
@@ -108,12 +176,13 @@ def run():
             5 -> 还款
             6 -> 转账
             7 -> 查看流水
-            8 -> 查看购物车
-            9 -> 注销
+            8 -> 购物车
+            9 -> 查看购物车
+            10 -> 注销
         """)
         choice = input('请输入想操作的功能>>>: ').strip()
         if choice not in action_menu:
             print('请输入正确的编号!')
-            exit(1)
+            continue
         action_menu[choice]()
 
