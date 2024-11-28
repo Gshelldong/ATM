@@ -36,3 +36,19 @@ def re_pay_interface(user,cash):
     user_dic['flow'].append(msg)
     db_handler.save(user_dic)
     return True,msg
+
+
+def transfer_interface(from_user, to_user, money):
+    base_user = db_handler.select(from_user)
+    dest_user = db_handler.select(to_user)
+    base_user_balance = base_user['balance']
+    msg = f'{from_user}向{to_user}转账{money}成功.'
+    if base_user_balance >= money:
+        base_user['balance'] -= money
+        dest_user['balance'] += money
+        base_user['flow'].append(msg)
+        db_handler.save(base_user)
+        db_handler.save(dest_user)
+        return True, msg
+    else:
+        return False, f'{from_user}余额不足!'

@@ -35,12 +35,12 @@ def login():
     while count:
         username = input('请输入用户名>>>: ')
         # 判断用户是否存在
-        flag = user_interface.check_user_interface(username)
+        flag,msg = user_interface.check_user_interface(username)
         if not flag:
             if count ==1:
                 print("尝试用户名最大次数！")
                 break
-            print('非法用户名!')
+            print(msg)
             count -=1
             continue
 
@@ -75,8 +75,28 @@ def repay():
     bank_interface.re_pay_interface(user_info['user_state'],cash)
 
 # 转账
+@common.auth_login
 def transfer():
-    pass
+    count = 0
+    while count < 3:
+        to_user = input('请输入你想转账的用户>>>: ')
+        res = user_interface.check_user_interface(to_user)
+        if not res:
+            count +=1
+            if count == 3:
+                print('尝试最大次数推出!')
+                break
+            print('该用户不存在请重新输入！')
+            continue
+        money = input('请输入你想转账的金额>>>: ').strip()
+        if money.isdigit():
+            money = int(money)
+            flag, msg = bank_interface.transfer_interface(user_info['user_state'], to_user, money)
+            if flag:
+                print(msg)
+                break
+            print(msg)
+            break
 
 @common.auth_login
 def check_flow():
@@ -148,8 +168,58 @@ def login_out():
     if flag:
         print(msg)
 
-def admin_manage():
+
+def lock_user():
+    user = input('请输入你想锁定的用户>>>: ')
+    flag,msg = user_interface.lock_user_interface(user)
+    if flag:
+        print(msg)
+    else:
+        print(msg)
+
+def unlock_user():
+    user = input('请输入你想解锁的用户>>>: ')
+    flag,msg = user_interface.unlock_user_interface(user)
+    if flag:
+        print(msg)
+    else:
+        print(msg)
+def add_user():
     pass
+
+def change_balance():
+    pass
+
+@common.auth_login
+def admin_manage():
+    admin_menu = {
+        '1': add_user,
+        '2': lock_user,
+        '3': unlock_user,
+        '4': change_balance
+    }
+
+    while True:
+        if user_info['user_state'] != 'admin':
+            print('你不是管理员，无法使用此功能！')
+            break
+        print("""
+            1 -> 添加用户
+            2 -> 锁定用户
+            3 -> 解锁用户
+            4 -> 修改用户余额
+            按q退出
+        """)
+        choice = input('请输入想要得功能编号>>>: ')
+        if choice == 'q':
+            break
+        if choice in admin_menu:
+            admin_menu[choice]()
+        else:
+            print("请输入正确得功能编号!")
+            break
+
+
 
 
 action_menu = {
@@ -179,10 +249,13 @@ def run():
             8 -> 购物车
             9 -> 查看购物车
             10 -> 注销
+            11 -> 管理员功能
         """)
         choice = input('请输入想操作的功能>>>: ').strip()
         if choice not in action_menu:
             print('请输入正确的编号!')
             continue
         action_menu[choice]()
+
+
 
