@@ -1,12 +1,18 @@
 from db import db_handler
 from lib import common
+from conf import settings
 
 def check_user_interface(user):
     user_dic = db_handler.select(user)
     # 返回为空用户名就不存在
     if user_dic:
         if user_dic['lock'] == True:
+            # 因为被锁了所以返货不可用状态
             return False,f'{user}被锁定无法登录!'
+        else:
+            # 否则状态就是正常的
+            return True, f'{user}状态正常.'
+    # 返回的查询用户字典是空的说明有这个用户
     return False,f'非法用户'
 
 def register_interface(username,password,blance=15000):
@@ -61,8 +67,17 @@ def unlock_user_interface(user):
     return False,'{user}已经解锁定'
 
 def change_balance_interface(user,money):
-    pass
+    user_dic = db_handler.select(user)
+    msg = f'{user}前金额{money}元.'
+    user_dic['flow'].append(msg)
+    user_dic['balance'] += money
+    db_handler.save(user_dic)
+    return f'修改{user}金额成功.'
+
+
+
 
 
 def add_user_interface(user):
-    pass
+    res = register_interface(user,password='123456')
+    return res

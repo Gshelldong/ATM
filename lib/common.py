@@ -1,4 +1,7 @@
 import hashlib
+import logging.config
+from conf import settings
+
 
 def get_md5(password):
     md = hashlib.md5()
@@ -17,3 +20,8 @@ def auth_login(func):
             print('你没有登陆请先登陆!')
             src.login()
     return inner
+
+def get_logger(log_name):
+    logging.config.dictConfig(settings.LOGGING_DIC) # 自动加载字典中的配置
+    logger = logging.getLogger(log_name)
+    return logger

@@ -29,7 +29,6 @@ def register():
     else:
         print('两次输入密码不一致.')
 
-
 def login():
     count = 3
     while count:
@@ -184,11 +183,22 @@ def unlock_user():
         print(msg)
     else:
         print(msg)
+
 def add_user():
-    pass
+    username = input("请输入一个注册的用户名>>>: ")
+    res = user_interface.add_user_interface(username)
+    print(res,'默认密码123456.')
+
 
 def change_balance():
-    pass
+    user = input('请输入修改金额的用户名>>>: ').strip()
+    money = input('请输入修改的金额>>>: ').strip()
+    if  money.isdigit():
+        money = int(money)
+        res = user_interface.change_balance_interface(user, money)
+        print(res)
+    else:
+        print('请输入正确的金额.')
 
 @common.auth_login
 def admin_manage():
@@ -218,8 +228,6 @@ def admin_manage():
         else:
             print("请输入正确得功能编号!")
             break
-
-
 
 
 action_menu = {

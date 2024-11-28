@@ -1,4 +1,7 @@
 from db import db_handler
+from lib import common
+
+logger = common.get_logger('bak_interface')
 
 def withdraw_interface(user,draw_cash):
     user_dic = db_handler.select(user)
@@ -7,15 +10,18 @@ def withdraw_interface(user,draw_cash):
         if user_dic['balance'] >= draw_cash:
             user_dic['balance'] -= draw_cash
             msg = f'用户{user}提现{draw_cash}成功!'
+            logger.info(msg)
             user_dic['flow'].append(msg)
             db_handler.save(user_dic)
             return True, msg
+    logger.error(f'{user}提现失败请重试!')
     return False, '提现失败请重试!'
 
 def pay_interface(user,cost):
     user_dic = db_handler.select(user)
     if user_dic['balance'] >= cost:
         user_dic['balance'] -= cost
+        logger.info(f'{user}付款{cost}成功!')
         user_dic['flow'].append(f'{user}付款{cost}成功!')
         db_handler.save(user_dic)
         return True
